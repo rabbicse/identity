@@ -1,0 +1,1 @@
+export NEXT_PUBLIC_ORY_SDK_URL=https://$PROJECT_SLUG.projects.oryapis.com
