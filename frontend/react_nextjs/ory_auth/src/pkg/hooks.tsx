@@ -1,5 +1,5 @@
 import { AxiosError } from "axios"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { useState, useEffect, DependencyList } from "react"
 
 import ory from "./sdk"
