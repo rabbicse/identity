@@ -41,8 +41,9 @@ export default function Home() {
       })
       .catch(() => {
         // Redirect to login page
-        const loginUrl = `${basePath}/self-service/login/browser`;
-        return router.push(loginUrl);
+        // const loginUrl = `${basePath}/self-service/login/browser`;
+        const loginUrl = `/orylogin`;
+        router.push(loginUrl);
       })
 
 
