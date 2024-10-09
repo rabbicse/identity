@@ -17,7 +17,8 @@ async function initiateLoginFlow() {
 }
 
 export async function POST(request: NextRequest) {
-    // const { identifier, password, flow } = request.body;
+    const body = await request.json();
+    const { identifier, password } = body;
 
     try {
         const flowId = await initiateLoginFlow() // Initiate login flow
@@ -27,8 +28,8 @@ export async function POST(request: NextRequest) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                identifier: 'meh@ory.com',
-                password: 'Ory@123456',
+                identifier: identifier,//'meh@ory.com',
+                password: password,//'Ory@123456',
                 // csrf_token: '123456',
                 method: 'password',
             }),
@@ -36,6 +37,7 @@ export async function POST(request: NextRequest) {
 
         if (!response.ok) {
             const errorData = await response.json();
+            console.log(errorData);
             return NextResponse.json(errorData, { status: response.status });
         }
 

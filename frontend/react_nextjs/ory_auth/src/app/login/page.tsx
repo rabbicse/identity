@@ -109,8 +109,8 @@ export default function LoginPage() {
   // {"csrf_token":"kv+5OVQefOxfwflSHmipeyNQ5aJE7+vu6/5NQEtGp6coeReJ8VTAiQc6SVrHDdTFW7mr/foGIeQNs2HzA1fZ+Q==","identifier":"mehmet@ory.com","password":"ory123456","method":"password"}
 
 
-  const [username, setUsername] = useState('mehmet@ory.com')
-  const [password, setPassword] = useState('Ory@123456')
+  const [userName, setUserName] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   // const handleSubmit = async () => {
@@ -135,9 +135,8 @@ export default function LoginPage() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        identifier: 'meh@ory.com',
-        password: 'Ory@123456',
-      //   csrf_token,
+        identifier: userName,
+        password: password,
         method: 'password',
       }),
     });
@@ -165,7 +164,7 @@ export default function LoginPage() {
         > */}
 
 
-        <Form action={submitLogin}>
+        <Form action={submitLogin} userName={userName} password={password} setUserName={setUserName} setPassword={setPassword}>
           <SubmitButton>Sign in</SubmitButton>
           <p className="text-center text-sm text-gray-600">
             {"Don't have an account? "}
