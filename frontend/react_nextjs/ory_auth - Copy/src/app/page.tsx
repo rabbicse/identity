@@ -1,6 +1,93 @@
+// Add this line at the top of your file
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react"
+
+import { Configuration, FrontendApi, Session, Identity } from "@ory/client"
+
+const basePath = process.env.NEXT_PUBLIC_ORY_SDK_URL;
+
+const ory = new FrontendApi(
+  new Configuration({
+    basePath: basePath,
+    baseOptions: {
+      withCredentials: true,
+    },
+  })
+);
+
+// Returns either the email or the username depending on the user's Identity Schema
+const getUserName = (identity: Identity) =>
+  identity.traits.email || identity.traits.username
 
 export default function Home() {
+  const router = useRouter()
+  const [session, setSession] = useState<Session | undefined>()
+  const [logoutUrl, setLogoutUrl] = useState<string | undefined>()
+
+  useEffect(() => {
+
+    ory
+      .toSession()
+      .then(({ data }) => {
+        // User has a session!
+        setSession(data)
+        // Create a logout url
+        ory.createBrowserLogoutFlow().then(({ data }) => {
+          setLogoutUrl(data.logout_url)
+        })
+      })
+      .catch(() => {
+        // Redirect to login page
+        // const loginUrl = `${basePath}/self-service/login/browser`;
+        const loginUrl = `/login`;
+        router.push(loginUrl);
+      })
+
+
+
+
+    // ory
+    //   .toSession()
+    //   .then(({ data }) => {
+    //     console.log("to session then....");
+    //     console.log(data);
+    //     // User has a session!
+    //     // setSession(data)
+    //     // Create a logout url
+    //     // ory.createBrowserLogoutFlow().then(({ data }) => {
+    //     //   console.log(data);
+    //     //   setLogoutUrl(data.logout_url)
+    //     // });
+    //     // Redirect to your desired page if the session is valid
+    //     // router.push('/'); // Update with your page
+    //   })
+    //   .catch((err) => {
+    //     console.error("Error:", err.response ? err.response.data : err.message);
+    //     console.log(err);
+
+
+    //     setTimeout(() => {
+    //       // router.push('/your-desired-page');
+    //       const loginUrl = `${basePath}/self-service/login/browser`;
+    //       return router.push(loginUrl);
+    //     }, 60 * 1000); // 1 second delay
+
+
+    //     // Redirect to login page
+    //     // return router.push(basePath + "/ui/login")
+    //     // const loginUrl = `${basePath}/self-service/login/browser`;
+    //     // return router.push(loginUrl);
+    //   })
+  }, [router])
+
+  if (!session) {
+    // Still loading
+    return null
+  }
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
@@ -12,6 +99,12 @@ export default function Home() {
           height={38}
           priority
         />
+
+        <p>Hello, {getUserName(session?.identity)}</p>
+        <div>
+          <a href={logoutUrl}>Log out</a>
+        </div>
+
         <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2">
             Get started by editing{" "}

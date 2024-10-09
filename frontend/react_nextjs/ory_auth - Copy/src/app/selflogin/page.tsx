@@ -23,42 +23,6 @@ const ory = new FrontendApi(
 
 
 
-const CustomLoginForm = ({ flow, onSubmit }: { flow: LoginFlow, onSubmit: (event: React.FormEvent<HTMLFormElement>) => void }) => {
-    return (
-        <form onSubmit={onSubmit}>
-            {flow.ui.nodes.map((node) => {
-                switch (node.type) {
-                    case "input":
-                        return (
-                            <div key={node.attributes.name}>
-                                <label htmlFor={node.attributes.name}>
-                                    {node.meta.label?.text}
-                                </label>
-                                <input
-                                    id={node.attributes.name}
-                                    name={node.attributes.name}
-                                    type={node.attributes.type}
-                                    value={node.attributes.value || ""}
-                                />
-                            </div>
-                        );
-                    case "button":
-                        return (
-                            <button key={node.attributes.name} type={node.attributes.type}>
-                                {node.meta.label?.text}
-                            </button>
-                        )
-                    default:
-                        return null
-                }
-            })}
-        </form>
-    )
-}
-
-
-
-
 // Error handler for login flows
 export const handleFlowError = (
     flowType: string,
