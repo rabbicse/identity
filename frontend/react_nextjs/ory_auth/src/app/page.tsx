@@ -36,8 +36,8 @@ export default function Home() {
         // Redirect to login page
         // const loginUrl = `${basePath}/self-service/login/browser`;
         const loginUrl = `/login`;
-        router.push(loginUrl);
-      })
+        return router.push(loginUrl);
+      });
   });
 
   return (
