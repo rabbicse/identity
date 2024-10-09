@@ -1,6 +1,45 @@
+"use client"
+
 import Image from "next/image";
+import { Configuration, FrontendApi, Session, Identity } from "@ory/client"
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+const basePath = process.env.NEXT_PUBLIC_ORY_SDK_URL;
+
+const ory = new FrontendApi(
+  new Configuration({
+    basePath: basePath,
+    baseOptions: {
+      withCredentials: true,
+    },
+  })
+);
 
 export default function Home() {
+  const router = useRouter()
+  const [session, setSession] = useState<Session | undefined>()
+  const [logoutUrl, setLogoutUrl] = useState<string | undefined>()
+
+  useEffect(() => {
+    ory
+      .toSession()
+      .then(({ data }) => {
+        // User has a session!
+        setSession(data)
+        // Create a logout url
+        ory.createBrowserLogoutFlow().then(({ data }) => {
+          setLogoutUrl(data.logout_url)
+        })
+      })
+      .catch(() => {
+        // Redirect to login page
+        // const loginUrl = `${basePath}/self-service/login/browser`;
+        const loginUrl = `/login`;
+        router.push(loginUrl);
+      })
+  });
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
