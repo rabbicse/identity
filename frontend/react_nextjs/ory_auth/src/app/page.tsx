@@ -17,28 +17,29 @@ const ory = new FrontendApi(
 );
 
 export default function Home() {
-  const router = useRouter()
-  const [session, setSession] = useState<Session | undefined>()
-  const [logoutUrl, setLogoutUrl] = useState<string | undefined>()
+  const router = useRouter();
+  const [session, setSession] = useState<Session | undefined>();
+  const [logoutUrl, setLogoutUrl] = useState<string | undefined>();
+  const [isFlowCreated, setIsFlowCreated] = useState(false); // Track if flow is created    
 
   useEffect(() => {
-    ory
-      .toSession()
-      .then(({ data }) => {
-        // User has a session!
-        setSession(data)
-        // Create a logout url
-        ory.createBrowserLogoutFlow().then(({ data }) => {
-          setLogoutUrl(data.logout_url)
-        })
-      })
-      .catch(() => {
-        // Redirect to login page
-        // const loginUrl = `${basePath}/self-service/login/browser`;
+    const fetchSession = async () => {
+      try {
+        const { data } = await ory.toSession();
+        console.log(data);
+        setSession(data);
+
+        const { data: logoutData } = await ory.createBrowserLogoutFlow();
+        setLogoutUrl(logoutData.logout_url);
+      } catch {
+        // Redirect to login page if there is no session
         const loginUrl = `/login`;
         return router.push(loginUrl);
-      });
-  });
+      }
+    };
+
+    fetchSession();
+  }, []); // Run only once on mount
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">

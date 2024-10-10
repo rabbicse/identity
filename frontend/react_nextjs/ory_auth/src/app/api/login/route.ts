@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // In your Next.js API route (e.g., /pages/api/login.js)
 async function initiateLoginFlow() {
-    const response = await fetch('http://localhost:4433/self-service/login/api', {
+    const response = await fetch(`${process.env.ORY_SDK_URL}/self-service/login/api`, {
         method: 'GET',
         credentials: 'include' // Include cookies if required
     });
@@ -21,16 +21,17 @@ export async function POST(request: NextRequest) {
     const { identifier, password } = body;
 
     try {
+        console.log(`getting flow...`);
         const flowId = await initiateLoginFlow() // Initiate login flow
-        const response = await fetch(`http://localhost:4433/self-service/login?flow=${flowId}`, {
+        console.log(`flow id: ${flowId}`);
+        const response = await fetch(`${process.env.ORY_SDK_URL}/self-service/login?flow=${flowId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                identifier: identifier,//'meh@ory.com',
-                password: password,//'Ory@123456',
-                // csrf_token: '123456',
+                identifier: identifier,
+                password: password,
                 method: 'password',
             }),
         });
@@ -44,10 +45,8 @@ export async function POST(request: NextRequest) {
         const data = await response.json();
         console.log(data);
         return NextResponse.json(data, { status: 200 })
-        // return res.status(200).json(data);
     } catch (error) {
         console.log(`Error when handle post request: ${error}`);
-        // return res.status(500).json({ error: 'Internal server error' });
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

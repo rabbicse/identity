@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Form } from '@/components/form';
 import { redirect } from 'next/navigation';
-import { SubmitButton } from '@/components/submit-button';
+import { SubmitButton } from '@/components/SubmitButton';
 
 export default function Register() {
   async function register(formData: FormData) {
