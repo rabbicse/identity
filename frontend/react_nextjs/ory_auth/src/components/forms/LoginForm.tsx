@@ -3,19 +3,9 @@
 import { useEffect, useState } from "react";
 import { SubmitButton } from "@/components/SubmitButton";
 import Link from "next/link";
-import { Configuration, FrontendApi, LoginFlow } from "@ory/client"
+import { LoginFlow } from "@ory/client"
 import { useRouter } from "next/navigation";
-
-const basePath = process.env.NEXT_PUBLIC_ORY_SDK_URL;
-
-const ory = new FrontendApi(
-    new Configuration({
-        basePath: basePath,
-        baseOptions: {
-            withCredentials: true,
-        },
-    })
-);
+import ory from "@/lib/sdk/ory"
 
 export default function LoginForm() {
     const router = useRouter();
@@ -25,6 +15,21 @@ export default function LoginForm() {
     const [error, setError] = useState<string | null>(null);
     const [csrfToken, setCsrfToken] = useState<string | null>(null);
     const [isFlowCreated, setIsFlowCreated] = useState(false); // Track if flow is created    
+
+
+    useEffect(() => {
+        const checkSession = async () => {
+            try {
+                const { data } = await ory.toSession();
+                // If a session exists, redirect to home page
+                router.push("/");
+            } catch (error) {
+                // If no session exists, allow the user to login
+                console.log(`No session exists! Error details: ${error}`);
+            }
+        };
+        checkSession();
+    }, [router]);
 
     useEffect(() => {
         if (flow) {

@@ -18,19 +18,25 @@ const ory = new FrontendApi(
 
 export default function Home() {
   const router = useRouter();
-  const [session, setSession] = useState<Session | undefined>();
+  const [session, setSession] = useState<string>(
+    "No valid Ory Session was found.\nPlease sign in to receive one.",
+  );
   const [logoutUrl, setLogoutUrl] = useState<string | undefined>();
-  const [isFlowCreated, setIsFlowCreated] = useState(false); // Track if flow is created    
+  const [isFlowCreated, setIsFlowCreated] = useState(false); // Track if flow is created
+  const [hasSession, setHasSession] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchSession = async () => {
       try {
         const { data } = await ory.toSession();
-        console.log(data);
-        setSession(data);
+        setSession(JSON.stringify(data));
+        setHasSession(true);
 
         const { data: logoutData } = await ory.createBrowserLogoutFlow();
+        console.log(logoutData);
+
         setLogoutUrl(logoutData.logout_url);
+
       } catch {
         // Redirect to login page if there is no session
         const loginUrl = `/login`;
@@ -40,6 +46,19 @@ export default function Home() {
 
     fetchSession();
   }, []); // Run only once on mount
+
+  const handleLogout = async () => {
+    // Redirect user to the Ory logout URL
+    // if (logoutUrl) {
+    //   router.push(logoutUrl);
+    // }
+
+    const { data } = await ory.createBrowserLogoutFlow();
+    console.log(data);
+    const response = await ory.updateLogoutFlow({ token: data.logout_token });
+    console.log(response);
+    router.push(`/login`);
+  };
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -88,6 +107,20 @@ export default function Home() {
             Read our docs
           </a>
         </div>
+
+        {hasSession ? (
+          <div>
+            <p>You are logged in.</p>
+            <button
+              className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <p>{session}</p>
+        )}
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a

@@ -1,45 +1,34 @@
 'use client'
 
-import Link from 'next/link';
-import { Form } from '@/components/form';
-import { redirect } from 'next/navigation';
-import { SubmitButton } from '@/components/SubmitButton';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import RegistrationForm from "@/components/forms/RegistrationForm"
 
-export default function Register() {
-  async function register(formData: FormData) {
-    let email = formData.get('email') as string;
-    let password = formData.get('password') as string;
-    let user = '';//await getUser(email);
+export const description =
+  "A sign up form with first name, last name, email and password inside a card. There's an option to sign up with GitHub and a link to login if you already have an account"
 
-    if (user.length > 0) {
-      return 'User already exists'; // TODO: Handle errors with useFormStatus
-    } else {
-    //   await createUser(email, password);
-    // TODO: need to update later
-      redirect('/login');
-    }
-  }
+const RegisterForm = () => {
 
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
-      <div className="z-10 w-full max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-xl">
-        <div className="flex flex-col items-center justify-center space-y-3 border-b border-gray-200 bg-white px-4 py-6 pt-8 text-center sm:px-16">
-          <h3 className="text-xl font-semibold">Sign Up</h3>
-          <p className="text-sm text-gray-500">
-            Create an account with your email and password
-          </p>
-        </div>
-        <Form action={register}>
-          <SubmitButton>Sign Up</SubmitButton>
-          <p className="text-center text-sm text-gray-600">
-            {'Already have an account? '}
-            <Link href="/login" className="font-semibold text-gray-800">
-              Sign in
-            </Link>
-            {' instead.'}
-          </p>
-        </Form>
-      </div>
+      <Card className="mx-auto max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-xl">Sign Up</CardTitle>
+          <CardDescription>
+            Enter your information to create an account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RegistrationForm />
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
+
+export default RegisterForm;
