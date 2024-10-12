@@ -12,7 +12,7 @@ import RegistrationForm from "@/components/forms/RegistrationForm"
 export const description =
   "A sign up form with first name, last name, email and password inside a card. There's an option to sign up with GitHub and a link to login if you already have an account"
 
-const RegisterForm = () => {
+const RegistrationPage = () => {
 
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
@@ -31,4 +31,4 @@ const RegisterForm = () => {
   )
 }
 
-export default RegisterForm;
+export default RegistrationPage;
