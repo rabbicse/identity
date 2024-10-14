@@ -39,6 +39,7 @@ export default function RegistrationForm() {
                 returnTo: undefined,
             })
             .then(({ data }) => {
+                console.log(data);
                 setFlow(data);
                 // Retrieve the CSRF token from the flow response
                 const csrfNode = data.ui.nodes.find(node => node.attributes.name === 'csrf_token');
