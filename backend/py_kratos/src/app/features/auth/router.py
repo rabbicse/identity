@@ -1,17 +1,12 @@
+import requests
 from fastapi import APIRouter
-
-from src.app.models.login import LoginRequestModel
+from fastapi import HTTPException
+from app.models.login import LoginRequestModel
 
 router = APIRouter(
     prefix='/auth',
     tags=['auth'],
 )
-
-
-from fastapi import FastAPI, HTTPException
-import requests
-
-# app = FastAPI()
 
 # Ory Kratos public endpoint
 ORY_KRATOS_PUBLIC_URL = "http://localhost:4433"  # Change this to your Ory Kratos public API URL
@@ -27,10 +22,10 @@ KRATOS_SESSIONS = f"{ORY_KRATOS_PUBLIC_URL}/sessions/whoami"
 KRATOS_IDENTITIES = f"{ORY_KRATOS_PUBLIC_URL}/identities"
 KRATOS_ERRORS = f"{ORY_KRATOS_PUBLIC_URL}/self-service/errors"
 
+
 # ------------------------------------------
 # Helper class for form submissions
 # ------------------------------------------
-
 
 
 # ------------------------------------------
@@ -49,7 +44,7 @@ async def login():
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.post("/login")
+@router.post("/login/submit")
 async def submit_login(form_data: LoginRequestModel):
     """Submit a login form."""
     try:
@@ -61,7 +56,8 @@ async def submit_login(form_data: LoginRequestModel):
         }
         print(payload)
         headers = {'Content-type': 'application/json'}
-        response = requests.post(f"{ORY_KRATOS_PUBLIC_URL}/self-service/login?flow={flow_id}", json=payload, headers=headers)
+        response = requests.post(f"{ORY_KRATOS_PUBLIC_URL}/self-service/login?flow={flow_id}", json=payload,
+                                 headers=headers)
         print(response.json())
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail="Login failed")
@@ -101,7 +97,7 @@ async def submit_registration(form_data: LoginRequestModel):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.post("/auth/logout")
+@router.post("/logout/submit")
 async def submit_logout(form_data: LoginRequestModel):
     """Perform logout."""
     try:
@@ -117,7 +113,7 @@ async def submit_logout(form_data: LoginRequestModel):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.get("/auth/recovery")
+@router.get("/recovery")
 async def recovery():
     """Initiates the recovery flow (password recovery)."""
     try:
@@ -129,7 +125,7 @@ async def recovery():
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.post("/auth/recovery/submit")
+@router.post("/recovery/submit")
 async def submit_recovery(form_data: LoginRequestModel):
     """Submit a recovery request (password reset)."""
     try:
@@ -147,7 +143,7 @@ async def submit_recovery(form_data: LoginRequestModel):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.get("/auth/verification")
+@router.get("/verification")
 async def verification():
     """Initiates the verification flow (e.g., email verification)."""
     try:
@@ -159,7 +155,7 @@ async def verification():
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@router.post("/auth/verification/submit")
+@router.post("/verification/submit")
 async def submit_verification(form_data: LoginRequestModel):
     """Submit a verification request (e.g., email verification)."""
     try:
