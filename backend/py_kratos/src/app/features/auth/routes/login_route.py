@@ -1,18 +1,15 @@
 import requests
-from fastapi import APIRouter
 from fastapi import HTTPException
-from app.models.login import LoginRequestModel
 
-router = APIRouter(
-    prefix='/auth',
-    tags=['auth'],
-)
+from app.features.auth.routes import router
+from app.models.login import LoginRequestModel
 
 # Ory Kratos public endpoint
 ORY_KRATOS_PUBLIC_URL = "http://localhost:4433"  # Change this to your Ory Kratos public API URL
 
 # Ory Kratos API Endpoints
-KRATOS_LOGIN_FLOW = f"{ORY_KRATOS_PUBLIC_URL}/self-service/login/api"
+KRATOS_LOGIN_FLOW_API = f"{ORY_KRATOS_PUBLIC_URL}/self-service/login/api"
+KRATOS_LOGIN_FLOW_BROWSER = f"{ORY_KRATOS_PUBLIC_URL}/self-service/login/browser"
 KRATOS_REGISTRATION_FLOW = f"{ORY_KRATOS_PUBLIC_URL}/self-service/registration/api"
 KRATOS_LOGOUT_FLOW = f"{ORY_KRATOS_PUBLIC_URL}/self-service/logout"
 KRATOS_RECOVERY_FLOW = f"{ORY_KRATOS_PUBLIC_URL}/self-service/recovery/api"
@@ -32,11 +29,22 @@ KRATOS_ERRORS = f"{ORY_KRATOS_PUBLIC_URL}/self-service/errors"
 # Ory Kratos Authentication Flows
 # ------------------------------------------
 
-@router.get("/login")
-async def login():
-    """Initiates the login flow."""
+@router.get("/login/api")
+async def login_api():
+    """Create Login Flow for Native Apps"""
     try:
-        response = requests.get(KRATOS_LOGIN_FLOW)
+        response = requests.get(KRATOS_LOGIN_FLOW_API)
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail="Failed to initiate login flow")
+        return response.json()
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@router.get("/login/browser")
+async def login_api():
+    """Create Login Flow for Browsers"""
+    try:
+        response = requests.get(KRATOS_LOGIN_FLOW_BROWSER)
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail="Failed to initiate login flow")
         return response.json()
