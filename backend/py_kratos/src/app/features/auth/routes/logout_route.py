@@ -1,44 +1,35 @@
 import requests
 from fastapi import HTTPException
 
-from app.features.auth.routes import router
-from app.models.login import LoginRequestModel
-
-# Ory Kratos public endpoint
-ORY_KRATOS_PUBLIC_URL = "http://localhost:4433"  # Change this to your Ory Kratos public API URL
-
-# Ory Kratos API Endpoints
-KRATOS_LOGIN_FLOW_API = f"{ORY_KRATOS_PUBLIC_URL}/self-service/login/api"
-KRATOS_REGISTRATION_FLOW = f"{ORY_KRATOS_PUBLIC_URL}/self-service/registration/api"
-KRATOS_LOGOUT_FLOW = f"{ORY_KRATOS_PUBLIC_URL}/self-service/logout"
-KRATOS_RECOVERY_FLOW = f"{ORY_KRATOS_PUBLIC_URL}/self-service/recovery/api"
-KRATOS_VERIFICATION_FLOW = f"{ORY_KRATOS_PUBLIC_URL}/self-service/verification/api"
-KRATOS_SETTINGS_FLOW = f"{ORY_KRATOS_PUBLIC_URL}/self-service/settings/api"
-KRATOS_SESSIONS = f"{ORY_KRATOS_PUBLIC_URL}/sessions/whoami"
-KRATOS_IDENTITIES = f"{ORY_KRATOS_PUBLIC_URL}/identities"
-KRATOS_ERRORS = f"{ORY_KRATOS_PUBLIC_URL}/self-service/errors"
+from app.features.auth.models.logout import LogoutRequestModel
+from app.features.auth.routes import router, ORY_KRATOS_PUBLIC_URL
 
 
-# ------------------------------------------
-# Helper class for form submissions
-# ------------------------------------------
-
-
-# ------------------------------------------
-# Ory Kratos Authentication Flows
-# ------------------------------------------
-
-@router.post("/logout/submit")
-async def submit_logout(form_data: LoginRequestModel):
-    """Perform logout."""
+@router.delete("/logout/api")
+async def logout_api(logout_request: LogoutRequestModel):
+    """Perform logout for api"""
     try:
         payload = {
-            "flow": form_data.flow_id,
-            "csrf_token": form_data.csrf_token,
+            "session_token": logout_request.session_token
         }
-        response = requests.post(f"{ORY_KRATOS_PUBLIC_URL}/self-service/logout", data=payload)
+
+        response = requests.delete(f"{ORY_KRATOS_PUBLIC_URL}/self-service/logout/api", data=payload)
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail="Logout failed")
         return {"message": "Logged out successfully"}
+
+    except requests.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@router.get("/logout/browser")
+async def logout_api(return_to: str):
+    """Perform logout for api"""
+    try:
+        url = f"{ORY_KRATOS_PUBLIC_URL}/self-service/logout/browser?return_to={return_to}"
+        response = requests.post(url)
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail="Logout failed")
+        return {"message": "Logged out successfully"}
+
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

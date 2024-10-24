@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-import app.features.auth as auth_router
+from app.features.auth.routes.auth_routes import auth_router
 
 app = FastAPI()
-app.include_router(auth_router.router)
+app.include_router(auth_router)
 
 
 if __name__ == "__main__":

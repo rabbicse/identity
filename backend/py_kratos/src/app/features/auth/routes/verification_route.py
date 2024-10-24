@@ -8,11 +8,11 @@ from app.features.auth.models.login import LoginRequestModel
 ORY_KRATOS_PUBLIC_URL = "http://localhost:4433"  # Change this to your Ory Kratos public API URL
 
 
-@router.get("/settings/api")
-async def settings_api():
-    """Create Auth Settings flow"""
+@router.get("/verification/api")
+async def verification_flow_api():
+    """Create verification flow for api"""
     try:
-        url = f'{ORY_KRATOS_PUBLIC_URL}/self-service/settings/api'
+        url = f'{ORY_KRATOS_PUBLIC_URL}/self-service/verification/api'
         headers = {'Accept': 'application/json'}
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
@@ -21,11 +21,11 @@ async def settings_api():
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-@router.get("/settings/browser")
-async def settings_browser():
+@router.get("/verification/browser")
+async def verification_flow_browser():
     """Get Auth Settings"""
     try:
-        url = f'{ORY_KRATOS_PUBLIC_URL}/self-service/settings/browser'
+        url = f'{ORY_KRATOS_PUBLIC_URL}/self-service/verification/browser'
         headers = {'Accept': 'application/json'}
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
