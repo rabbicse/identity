@@ -29,66 +29,6 @@ KRATOS_ERRORS = f"{ORY_KRATOS_PUBLIC_URL}/self-service/errors"
 # Ory Kratos Authentication Flows
 # ------------------------------------------
 
-@router.get("/login/api")
-async def login_api():
-    """Create Login Flow for Native Apps"""
-    try:
-        response = requests.get(KRATOS_LOGIN_FLOW_API)
-        if response.status_code != 200:
-            raise HTTPException(status_code=response.status_code, detail="Failed to initiate login flow")
-        return response.json()
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
-@router.get("/login/browser")
-async def login_browser():
-    """Create Login Flow for Browsers"""
-    try:
-        headers = {'Accept': 'application/json'}
-        response = requests.get(KRATOS_LOGIN_FLOW_BROWSER, headers=headers)
-        if response.status_code != 200:
-            raise HTTPException(status_code=response.status_code, detail="Failed to initiate login flow")
-        return response.json()
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
-@router.get("/login/{flow}")
-async def get_login_flow(flow: str):
-    """Create Login Flow for Native Apps"""
-    try:
-        headers = {'Accept': 'application/json'}
-        url = f"{ORY_KRATOS_PUBLIC_URL}/self-service/login/flows?id={flow}"
-        print(url)
-        response = requests.get(url, headers=headers)
-        if response.status_code != 200:
-            raise HTTPException(status_code=response.status_code, detail="Failed to initiate login flow")
-        return response.json()
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
-@router.post("/login/submit")
-async def submit_login(form_data: LoginRequestModel):
-    """Submit a login form."""
-    try:
-        flow_id = form_data.flow_id
-        payload = {
-            "method": form_data.method,
-            "identifier": form_data.email,
-            "password": form_data.password
-        }
-        headers = {'Content-type': 'application/json'}
-        response = requests.post(f"{ORY_KRATOS_PUBLIC_URL}/self-service/login?flow={flow_id}",
-                                 json=payload,
-                                 headers=headers)
-        if response.status_code != 200:
-            raise HTTPException(status_code=response.status_code, detail="Login failed")
-        return response.json()
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
 
 @router.get("/registration")
 async def registration():
